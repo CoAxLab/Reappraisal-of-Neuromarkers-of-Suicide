@@ -11,15 +11,15 @@ close all; clear all;
 
 % Run forward stepwise search for words, using all regions.
 [prime_list, k_len_aic] = logistic_regression_wordsearch('configuration_stepwise_search');
-word_list = prime_list(1:find(k_len_aic == min(k_len_aic))); % Last entry is when AIC jumps, so remove
+word_list = prime_list(1:find(k_len_aic == min(k_len_aic))); 
 
 % Run forward stepwise search for affective group regions, using all words
 [prime_list, k_len_aic] = logistic_regression_aff_roisearch('configuration_stepwise_search');
-aff_region_list = prime_list(1:find(k_len_aic == min(k_len_aic))); % Last entry is when AIC jumps, so remove
+aff_region_list = prime_list(1:find(k_len_aic == min(k_len_aic))); 
 
 % Run forward stepwise search for control group regions, using all words
 [prime_list, k_len_aic] = logistic_regression_con_roisearch('configuration_stepwise_search');
-con_region_list = prime_list(1:find(k_len_aic == min(k_len_aic))); % Last entry is when AIC jumps, so remove
+con_region_list = prime_list(1:find(k_len_aic == min(k_len_aic))); 
 
 % Using the forward stepwise search features
 [meanacc,full_acc] = group_membership('configuration_fssearch');

@@ -47,10 +47,6 @@ function [primelist, k_len_aic] = logistic_regression_aff_roisearch(config, scra
       fprintf(sprintf('k=%d, r = %d\n',k,r));
       regions2use = [primelist roilist(r)];
   
-%       f_con = sub_get_loc_struct(in_con_clusters,...
-%                                     loc_con2use,descriptor);
-%       f_con = sub_filter(f_con,common);
-
       subset_f_aff = f_aff;
       subset_f_aff.cubes = f_aff.cubes(regions2use);
       subset_f_aff.ccubes = f_aff.ccubes(regions2use);
@@ -58,46 +54,51 @@ function [primelist, k_len_aic] = logistic_regression_aff_roisearch(config, scra
       [fimage,aff_subj,con_subj,voxel_set]=construct_images(config,subset_f_aff,null_con,...
           'words2use',words2use);
 
-      n_regions = size(fimage,2)./length(words2use);
-
-      regions_ind = repmat(words2use, 1, n_regions);
-
-      % Average across regions
-      x = [];
-      for region = 1:length(regions2use);
-          x(:,region) = mean(fimage(:,find(regions_ind==regions2use(region))),2);
-      end
-
+      % Revision: Do not collapse across regions
+      x = fimage;
+      n = size(x,1); 
+      p = size(x,2);
+      
       % Run the logistic regression
-      [betas, dev, stats] = mnrfit(x, labels);
+      try
+	# If running Matlab use mrnfit
+	[betas, dev] = mnrfit(x, labels);
 
-      rss = sum([stats.resid(:,1)+stats.resid(:,2)].^2);
+      catch
+	# Otherwise, use logistic_regression in Octave
+	x = [ones(size(x),1) x];
+	
+	try 
+	  [~,betas, dev] = logistic_regression(labels,x);
+	catch
+	  dev = Inf; # If model fails to converge
+	end
+	
+      end;
 
-      % Store the deviance for the run
-      dev_list(r) = dev;
-      rss_list(r) = rss;
+      % Store the AIC for the run: DEV = -2*ln(L)
+      % AIC for logistic: -(2/N)*L + 2(p/N)      
+      aic_list(r) = dev + 2*(p/n);
+      
     end;
 
     % Find the best feature from this run
-    best_region = find(dev_list == min(dev_list));
+    best_region = find(aic_list == min(aic_list));
 
+    # If a tie take the first one
     if length(best_region) > 1
-        % if tie, go with the model with the smallest RSS?
-       %keyboard;
        best_region = best_region(1);
     end
 
-    % In logistiic regression dev = -2*log(L(\betas));
-    k_len_aic(k) = 2*k + dev_list(best_region);
-
+    % Keep the best AIC value
+    k_len_aic(k) = aic_list(best_region);
 
     % update the lists for the next round
     primelist = [primelist roilist(best_region)];
     roilist = setdiff(roilist, roilist(best_region));
 
-    clear dev_list rss_list;
+    clear aic_list;
 
-    %if k > 1 & (k_len_aic(k-1)<k_len_aic(k) | isempty(roilist));
     if isempty(roilist)
       isDone=1;
     else

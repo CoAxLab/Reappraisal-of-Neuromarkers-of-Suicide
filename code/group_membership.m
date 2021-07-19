@@ -1,4 +1,4 @@
-function [meanacc,full_acc] = group_membership(config)
+function [meanacc,full_acc] = group_membership(config, varargin)
   % the main function for ideator-control group membership classification
   % config is specified as 'configuration' for configuration.m
   % Example:
@@ -11,6 +11,12 @@ function [meanacc,full_acc] = group_membership(config)
   % for each of the leave-one-subject-out classification folds
 
    run(['./' config '.m']);
+
+
+  % Get variable input parameters                                                                  
+  for v=1:2:length(varargin),
+    eval(sprintf('%s = varargin{%d};',varargin{v},v+1));
+  end
 
    load(in_common); % common aff_subj con_subj
    clear common
@@ -28,11 +34,13 @@ function [meanacc,full_acc] = group_membership(config)
    for s = list
       % get the discriminating brain locations for the fold
       % (based on the training subjects)
-      [f_aff,f_con, locs] = get_brain_locations(config,s);
+      [f_aff,f_con, locs] = get_brain_locations(config,s,'loc_aff2use',loc_aff2use,...
+      'loc_con2use',loc_con2use);
           
 
       % construct feature images
-      [fimage,aff_subj,con_subj,voxel_set]=construct_images(config,f_aff,f_con);
+      [fimage,aff_subj,con_subj,voxel_set]=construct_images(config,f_aff,f_con,...
+      'words2use',words2use);
 
       
       %region_labels{s} = {f_aff.cubes(1).label, f_aff.cubes(2).label, ...

@@ -54,46 +54,55 @@ function [primelist, k_len_aic] = logistic_regression_con_roisearch(config, scra
       [fimage,aff_subj,con_subj,voxel_set]=construct_images(config,null_aff,subset_f_con,...
           'words2use',words2use);
 
-      n_regions = size(fimage,2)./length(words2use);
+      # CUT: n_regions = size(fimage,2)./length(words2use);
+      # CUT: regions_ind = repmat(words2use, 1, n_regions);
 
-      regions_ind = repmat(words2use, 1, n_regions);
-
-      % Average across regions
-      x = [];
-      for region = 1:length(regions2use);
-          x(:,region) = mean(fimage(:,find(regions_ind==regions2use(region))),2);
-      end
-
+      % Revision: Do not collapse across regions
+      x = fimage;
+      n = size(x,1); 
+      p = size(x,2);
+      
       % Run the logistic regression
-      [betas, dev, stats] = mnrfit(x, labels);
+      try
+	# If running Matlab use mrnfit
+	[betas, dev] = mnrfit(x, labels);
+      catch
+	# Otherwise, use logistic_regression in Octave
+	% addpath('stat_utils');
+	x = [ones(size(x,1),1) x];
+	
+	try 
+	  [~,betas, dev] = logistic_regression(labels,x);
+	catch
+	  dev = Inf; # If model fails to converge
+	end
+	
+      end;
 
-      rss = sum([stats.resid(:,1)+stats.resid(:,2)].^2);
-
-      % Store the deviance for the run
-      dev_list(r) = dev;
-      rss_list(r) = rss;
+      % Store the AIC for the run: DEV = -2*ln(L)
+      % AIC for logistic: -(2/N)*L + 2(p/N)
+      aic_list(r) = dev/n + 2*(p/n);
+      
     end;
 
     % Find the best feature from this run
-    best_region = find(dev_list == min(dev_list));
+    best_region = find(aic_list == min(aic_list));
 
     if length(best_region) > 1
         % if tie, go with the model with the smallest RSS?
-       %keyboard;
        best_region = best_region(1);
     end
 
-    % In logistiic regression dev = -2*log(L(\betas));
-    k_len_aic(k) = 2*k + dev_list(best_region);
+    % Keep the best AIC value
+    k_len_aic(k) = aic_list(best_region);
 
 
     % update the lists for the next round
     primelist = [primelist roilist(best_region)];
     roilist = setdiff(roilist, roilist(best_region));
 
-    clear dev_list rss_list;
+    clear aic_list;
 
-    %if k > 1 & (k_len_aic(k-1)<k_len_aic(k) | isempty(roilist));
     if isempty(roilist)
       isDone=1;
     else

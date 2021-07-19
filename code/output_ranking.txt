@@ -1,0 +1,79 @@
+
+New:
+ans = vitality
+ans = apathy
+ans = death
+ans = desperate
+ans = distressed
+ans = fatal
+ans = funeral
+ans = hopeless
+ans = lifeless
+ans = overdose
+ans = suicide
+ans = bliss
+ans = carefree
+ans = comfort
+ans = excellent
+ans = good
+ans = innocent
+ans = kindness
+ans = praise
+ans = superior
+ans = boredom
+ans = criticism
+ans = cruelty
+ans = evil
+ans = gloom
+ans = guilty
+ans = inferior
+ans = terrible
+ans = trouble
+ans = worried
+
+Original:
+ans = death (3)
+ans = carefree (13)
+ans = good (16)
+ans = cruelty (23)
+ans = praise (19)
+ans = trouble (29)
+
+
+New Aff:
+ns = Angular_L
+ans = Parietal_Sup_L
+ans = Precuneus_L
+ans = Supp_Motor_Area_L
+ans = Temporal_Mid_L
+ans = Precentral_L
+ans = Frontal_Inf_Tri_L
+ans = Temporal_Mid_R
+ans = Frontal_Inf_Tri_L
+ans = Frontal_Inf_Oper_L
+ans = Parietal_Inf_L
+
+Original Aff:
+ans = Parietal_Inf_L (11)
+ans = Frontal_Inf_Tri_L (7)
+
+New Con:
+ans = Cingulum_Ant_L
+ans = Temporal_Mid_L
+ans = Frontal_Inf_Tri_L
+ans = Frontal_Sup_Medial_L
+ans = Frontal_Inf_Tri_L
+ans = Frontal_Inf_Tri_R
+ans = Precuneus_R
+ans = Frontal_Inf_Tri_L
+ans = Frontal_Inf_Oper_L
+ans = Supp_Motor_Area_L
+ans = Precentral_L
+ans = Temporal_Mid_R
+ans = SupraMarginal_R
+ans = Frontal_Sup_R
+
+Original Con:
+ans = Frontal_Sup_Medial_L (4)
+ans = Cingulum_Ant_L (1)
+ans = Temporal_Mid_R (12)

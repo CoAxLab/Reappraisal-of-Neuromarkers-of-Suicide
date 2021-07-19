@@ -17,8 +17,8 @@
 % clusters (numbered, in decreasing nvox order)
 % aff: 11 con: 14
 % the most predicitve locations:
-   loc_aff2use = [4 5 11 2 8 9];
-   loc_con2use = [7 12];
+   loc_aff2use = [5]; %[4 5 11 2 8 9];
+   loc_con2use = [8]; %[7 12];
    descriptor = 'xyz_cluster';
 
 % configuration parameters for the construction of images
@@ -27,7 +27,7 @@
    minnvox =2;% no less than minnvox
    vsel = 'stab30'; % use the most stable (30) voxels
    data2use = 'words2use'; % if this one, then also specify words2use
-   words2use = [15 19 13 23 9 27 22 10]; 
+   words2use = [20]; %[15 19 13 23 9 27 22 26 10]; 
    %death carefree good cruelty praise trouble - the most predictive concepts
 
 % classification parameters
